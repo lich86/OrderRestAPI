@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,16 +35,22 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}")
-    public String getUser(@PathVariable(name = "id") Long id) throws JsonProcessingException {
+    public String getUser(@RequestParam(value = "view", defaultValue = "summary") String view, @PathVariable(name = "id") Long id) throws JsonProcessingException {
         User user = userService.getById(id);
-        return mapper.writerWithView(Views.UserSummary.class).writeValueAsString(user);
+        Class<?> viewClass;
+        switch (view) {
+            case "summary":
+                viewClass = Views.UserSummary.class;
+                break;
+            case "details":
+            default:
+                viewClass = Views.UserDetails.class;
+                break;
+        }
+
+        return mapper.writerWithView(viewClass).writeValueAsString(user);
     }
 
-    @GetMapping(value = "/detailed/{id}")
-    public String getDetailedUser(@PathVariable(name = "id") Long id) throws JsonProcessingException {
-        User user = userService.getById(id);
-        return mapper.writerWithView(Views.UserDetails.class).writeValueAsString(user);
-    }
 
     @GetMapping
     public String getUsers(Pageable pageable) throws JsonProcessingException {
