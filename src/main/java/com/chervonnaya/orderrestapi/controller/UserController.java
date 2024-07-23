@@ -4,13 +4,12 @@ import com.chervonnaya.orderrestapi.dto.UserDTO;
 import com.chervonnaya.orderrestapi.model.User;
 import com.chervonnaya.orderrestapi.model.Views;
 import com.chervonnaya.orderrestapi.service.impl.UserServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,49 +24,44 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/user")
 public class UserController {
     private final UserServiceImpl userService;
-    private final ObjectMapper mapper;
 
     @Autowired
-    public UserController(UserServiceImpl userService, ObjectMapper mapper) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
-        this.mapper = mapper;
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
     @GetMapping(value = "/{id}")
-    public String getUser(@RequestParam(value = "view", defaultValue = "summary") String view, @PathVariable(name = "id") Long id) throws JsonProcessingException {
+    public MappingJacksonValue getUser(@RequestParam(value = "view", defaultValue = "summary") String view,
+                                       @PathVariable(name = "id") Long id) {
         User user = userService.getById(id);
-        Class<?> viewClass;
-        switch (view) {
-            case "summary":
-                viewClass = Views.UserSummary.class;
-                break;
-            case "details":
-            default:
-                viewClass = Views.UserDetails.class;
-                break;
-        }
-
-        return mapper.writerWithView(viewClass).writeValueAsString(user);
+        Class<?> viewClass = switch (view) {
+            case "summary" -> Views.UserSummary.class;
+            case "detail" -> Views.UserDetails.class;
+            default -> Views.UserDetails.class;
+        };
+        MappingJacksonValue value = new MappingJacksonValue(user);
+        value.setSerializationView(viewClass);
+        return value;
     }
 
 
     @GetMapping
-    public String getUsers(Pageable pageable) throws JsonProcessingException {
-        Page<User> page = userService.findAll(pageable);
-        return mapper.writerWithView(Views.UserSummary.class).writeValueAsString(page);
+    @JsonView(Views.UserSummary.class)
+    public Page<User> getUsers(Pageable pageable) {
+        return userService.findAll(pageable);
     }
 
     @PostMapping
-    public String createUser(@Valid @RequestBody UserDTO dto) throws JsonProcessingException {
-        User user = userService.save(dto);
-        return mapper.writerWithView(Views.UserSummary.class).writeValueAsString(user);
+    @JsonView(Views.UserSummary.class)
+    public User createUser(@Valid @RequestBody UserDTO dto) {
+        return userService.save(dto);
     }
 
     @PutMapping("/{id}")
-    public String updateUser(@PathVariable(name = "id") Long id,@Valid @RequestBody UserDTO dto) throws JsonProcessingException {
-        User user = userService.update(id, dto);
-        return mapper.writerWithView(Views.UserSummary.class).writeValueAsString(user);
+    @JsonView(Views.UserSummary.class)
+    public User updateUser(@PathVariable(name = "id") Long id,
+                           @Valid @RequestBody UserDTO dto) {
+        return userService.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
