@@ -7,6 +7,7 @@ import com.chervonnaya.orderrestapi.service.impl.UserServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +34,15 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}")
-    public User getUser(@PathVariable(name = "id") Long id) throws JsonProcessingException {
-        return userService.getById(id);
+    public String getUser(@PathVariable(name = "id") Long id) throws JsonProcessingException {
+        User user = userService.getById(id);
+        return mapper.writerWithView(Views.UserSummary.class).writeValueAsString(user);
+    }
+
+    @GetMapping(value = "/detailed/{id}")
+    public String getDetailedUser(@PathVariable(name = "id") Long id) throws JsonProcessingException {
+        User user = userService.getById(id);
+        return mapper.writerWithView(Views.UserDetails.class).writeValueAsString(user);
     }
 
     @GetMapping
@@ -44,13 +52,13 @@ public class UserController {
     }
 
     @PostMapping
-    public String createUser(@RequestBody UserDTO dto) throws JsonProcessingException {
+    public String createUser(@Valid @RequestBody UserDTO dto) throws JsonProcessingException {
         User user = userService.save(dto);
         return mapper.writerWithView(Views.UserSummary.class).writeValueAsString(user);
     }
 
     @PutMapping("/{id}")
-    public String updateUser(@PathVariable(name = "id") Long id, @RequestBody UserDTO dto) throws JsonProcessingException {
+    public String updateUser(@PathVariable(name = "id") Long id,@Valid @RequestBody UserDTO dto) throws JsonProcessingException {
         User user = userService.update(id, dto);
         return mapper.writerWithView(Views.UserSummary.class).writeValueAsString(user);
     }

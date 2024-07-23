@@ -7,6 +7,7 @@ import com.chervonnaya.orderrestapi.service.impl.OrderServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,13 +47,13 @@ public class OrderController {
     }
 
     @PostMapping
-    public String createOrder(@RequestBody OrderDTO dto) throws JsonProcessingException {
+    public String createOrder(@Valid @RequestBody OrderDTO dto) throws JsonProcessingException {
         Order order = orderService.save(dto);
         return mapper.writerWithView(Views.Order.class).writeValueAsString(order);
     }
 
     @PutMapping("/{id}")
-    public String updateOrder(@PathVariable(name = "id") Long id, @RequestBody OrderDTO dto) throws JsonProcessingException {
+    public String updateOrder(@PathVariable(name = "id") Long id, @Valid @RequestBody OrderDTO dto) throws JsonProcessingException {
         Order order = orderService.update(id, dto);
         return mapper.writerWithView(Views.Order.class).writeValueAsString(order);
     }

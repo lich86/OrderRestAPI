@@ -55,7 +55,7 @@ public class CrudServiceImpl<E extends BaseEntity, D extends BaseDTO, R extends 
             return entity;
         } catch (Exception ex) {
             log.error(String.format("Unable to save %s", this.genericType.getSimpleName().toLowerCase()));
-            throw new SaveEntityException(this.genericType.getSimpleName());
+            throw new SaveEntityException(this.genericType.getSimpleName(), ex.getMessage());
         }
     }
 
@@ -71,7 +71,7 @@ public class CrudServiceImpl<E extends BaseEntity, D extends BaseDTO, R extends 
             return entity;
         } catch (Exception ex) {
             log.error(String.format("Unable to update %s", this.genericType.getSimpleName().toLowerCase()), id);
-            throw new SaveEntityException(this.genericType.getSimpleName(), id);
+            throw new SaveEntityException(this.genericType.getSimpleName(), id, ex.getMessage());
         }
 
     }

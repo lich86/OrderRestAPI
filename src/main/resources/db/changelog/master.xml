@@ -24,7 +24,7 @@
             <column name="time_created" type="DATETIME"/>
             <column name="time_updated" type="DATETIME"/>
             <column name="user_id" type="BIGINT"/>
-            <column name="sum" type="INT"/>
+            <column name="sum" type="DECIMAL(15,2)"/>
             <column name="status" type="SMALLINT"/>
         </createTable>
     </changeSet>
@@ -79,6 +79,17 @@
                 (3, 'Iphone'),
                 (3, 'Vacuum cleaner'),
                 (3, 'Fan');
+        </sql>
+    </changeSet>
+    <changeSet id="11" author="lich">
+        <sql>
+            SELECT setval('base_seq', (SELECT MAX(id) FROM users));
+        </sql>
+    </changeSet>
+    <changeSet id="12" author="lich">
+        <sql>
+            ALTER TABLE users ALTER COLUMN id SET DEFAULT nextval('base_seq');
+            ALTER TABLE orders ALTER COLUMN id SET DEFAULT nextval('base_seq');
         </sql>
     </changeSet>
 

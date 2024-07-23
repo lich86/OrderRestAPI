@@ -1,5 +1,6 @@
 package com.chervonnaya.orderrestapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.CascadeType;
@@ -13,7 +14,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
+
 
 @Data
 @EqualsAndHashCode(callSuper=true)
@@ -36,11 +38,12 @@ public class User extends BaseEntity{
     private String email;
 
     @Column(name = "password", nullable = false)
+    @JsonIgnore
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER)
-    @JsonView(Views.UserSummary.class)
+    @JsonView(Views.UserDetails.class)
     @JsonIgnoreProperties("user")
-    private Set<Order> orders;
+    private List<Order> orders;
 
 }
