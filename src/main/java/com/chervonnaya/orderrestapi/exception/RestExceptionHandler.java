@@ -89,7 +89,7 @@ public class RestExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /*@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception e) {
         ErrorResponse response = new ErrorResponse(
@@ -98,7 +98,7 @@ public class RestExceptionHandler {
             now()
         );
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }*/
+    }
 
 
     public record ErrorResponse(String message, HttpStatus statusCode, LocalDateTime timestamp) {
