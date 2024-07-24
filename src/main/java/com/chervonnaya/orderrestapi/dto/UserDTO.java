@@ -16,7 +16,8 @@ public class UserDTO extends BaseDTO {
     private String firstName;
     @NotBlank(message = "{lastName.notBlank}")
     private String lastName;
-    @Email
+    @Email(message = "{email.Message}")
+    @NotBlank(message = "{email.Message}")
     private String email;
     @NotBlank(message = "{password.notBlank}")
     private String password;

@@ -37,7 +37,7 @@ public class UserController {
         Class<?> viewClass = switch (view) {
             case "summary" -> Views.UserSummary.class;
             case "detail" -> Views.UserDetails.class;
-            default -> Views.UserDetails.class;
+            default -> Views.UserSummary.class;
         };
         MappingJacksonValue value = new MappingJacksonValue(user);
         value.setSerializationView(viewClass);

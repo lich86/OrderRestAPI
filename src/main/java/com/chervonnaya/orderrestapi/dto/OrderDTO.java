@@ -26,6 +26,6 @@ public class OrderDTO extends BaseDTO {
     @DecimalMin(value = "0.0", message = "{sum.Min}")
     @DecimalMax(value = "9999999999999.99", message = "{sum.Max}")
     private BigDecimal sum;
-    @NotNull
+    @NotNull(message = "{status.notNull}")
     private Status status;
 }
